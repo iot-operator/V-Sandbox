@@ -52,7 +52,10 @@ def pre_analyze(elf):
         dst_lib = '/lib/'
         rsync('root', vm_ip, dst_lib, src_lib)
     else:
-        print('OK')
+        print('OK', end=' ')
+        src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
+        dst_lib = '/lib/'
+        rsync('root', vm_ip, dst_lib, src_lib)
 
     print('Analyzing...')
     cmd = 'cd qemu/ && chmod +x ' + elf + ' && python main.py ' + elf + ' 10'
@@ -92,25 +95,7 @@ def analyze_ccserver(elf, arch, report_dir):
         shutdown_vm(arch)
         exit(0)
 
-    print('Redirecting...', end=' ')
-    for ip in ip_list:
-        cmd = 'iptables -t nat -A OUTPUT -p tcp -d ' + ip + ' -j DNAT --to-destination ' + server_ip
-        exit_status, output = paramiko_client(vm_ip, cmd)
-        if exit_status != 0:
-            print('Failed\n' + str(output).strip())
-            shutdown_vm(arch)
-            exit(0)
-        break
-    print('Done')
-    if len(ip_list) > 1:
-        print('Redirecting all...', end=' ')
-        cmd = 'iptables -t nat -A OUTPUT -p tcp -j DNAT --to-destination ' + server_ip
-        exit_status, output = paramiko_client(vm_ip, cmd)
-        if exit_status != 0:
-            print('Failed\n' + str(output).strip())
-            shutdown_vm(arch)
-            exit(0)
-        print('Done')
+    paramiko_client_ipt(vm_ip, ip_list)
 
     que = queue.Queue()
     serverThread = threading.Thread(target=lambda q, arg: q.put(server(arg)), args=(que, '', ))
@@ -141,10 +126,11 @@ def analyze_ccserver(elf, arch, report_dir):
 
 if __name__ == "__main__":
     t = time.time()
-    print('--------vSandbox--------')
+    print('__________vSandbox__________')
     elf = '.' + sys.argv[1][sys.argv[1].rfind('/'):]
     print('Stage 1: Pre-analyze')
-    arch, report_dir = pre_analyze(elf)
+    # arch, report_dir = pre_analyze(elf)
+    arch, report_dir = 'i386', '467b70c57106d6031ca1fca76c302ec4d07da253f7d4043b60bdafd7b4d33390_1585715760/'
     print('-'*24)
     print('Stage 2: Analyzing with C&C Server')
     analyze_ccserver(elf, arch, report_dir)
