@@ -1,5 +1,7 @@
-## vSandbox
-# Install
+# vSandbox
+## Requirements
+python 3
+## Setup environment
 mkdir report/\
 mkdir final_report/\
 sudo apt-get update\
@@ -42,5 +44,5 @@ host 192.168.122.*
     StrictHostKeyChecking no
     UserKnownHostsFile=/dev/null
 ```
-# Run sandbox
+## Run sandbox
 python3 run.py <file_or_folder>
