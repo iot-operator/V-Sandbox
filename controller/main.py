@@ -134,8 +134,8 @@ if __name__ == "__main__":
     print('__________vSandbox__________')
     elf = '.' + sys.argv[1][sys.argv[1].rfind('/'):]
     print('Stage 1: Pre-analyze')
-    # arch, report_dir = pre_analyze(elf)
-    arch, report_dir = 'i386', '467b70c57106d6031ca1fca76c302ec4d07da253f7d4043b60bdafd7b4d33390_1585795870/'
+    arch, report_dir = pre_analyze(elf)
+    # arch, report_dir = 'i386', '467b70c57106d6031ca1fca76c302ec4d07da253f7d4043b60bdafd7b4d33390_1585795870/'
     print('-'*24)
     print('Stage 2: Analyzing with C&C Server')
     analyze_ccserver(elf, arch, report_dir)
