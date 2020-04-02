@@ -58,13 +58,9 @@ def paramiko_client(vm_ip, cmd, thread=None, que=None):
     return exit_status, output
 
 
-def paramiko_client_ipt(vm_ip, ip_list):
-    with open('ip_list', 'w') as f:
-        for ip in ip_list:
-            f.write(ip + '\n')
-
+def paramiko_client_ipt(vm_ip):
     print('Moving ip_list...', end=' ')
-    if scp_to_vm('ip_list', 'root', vm_ip, '/root/') == 1:
+    if scp_to_vm('ip_list.txt', 'root', vm_ip, '/root/') == 1:
         print('Failed to move list of C&C IPs')
         exit(0)
 
@@ -72,7 +68,7 @@ def paramiko_client_ipt(vm_ip, ip_list):
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(vm_ip, username='root', password='root')
     server_ip = '192.168.122.1:12345'
-    cmd = 'for IP in $(cat ip_list); do iptables -t nat -A OUTPUT -p tcp -d $IP -j DNAT --to-destination ' + \
+    cmd = 'for IP in $(cat ip_list.txt); do iptables -t nat -A OUTPUT -p tcp -d $IP -j DNAT --to-destination ' + \
         server_ip + '; done'
     _, stdout, _ = client.exec_command(cmd)
     exit_status = stdout.channel.recv_exit_status()
