@@ -6,8 +6,11 @@ from threading import Timer
 
 
 def proc_file(path):
-    p = subprocess.Popen('python3 controller/main.py ' + path, shell=True)
-    p.wait()
+    output = os.popen('file ' + path)
+    ret = output.read()
+    if 'dynamic' in ret:
+        p = subprocess.Popen('python3 controller/main.py ' + path, shell=True)
+        p.wait()
 
 
 def proc_folder(path):

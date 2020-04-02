@@ -3,11 +3,14 @@ import sys
 import subprocess
 import time
 from threading import Timer
+from utils import check_file_arch
 
 
 def proc_file(path):
-    p = subprocess.Popen('python3 controller/main.py ' + path, shell=True)
-    p.wait()
+    arch = check_file_arch(path)
+    if arch == sys.argv[2]:
+        p = subprocess.Popen('python3 controller/main.py ' + path, shell=True)
+        p.wait()
 
 
 def proc_folder(path):

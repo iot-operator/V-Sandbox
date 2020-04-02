@@ -88,7 +88,7 @@ def server(host):
 
     while True:
         try:
-            s.settimeout(10)
+            s.settimeout(30)
             c, addr = s.accept()
         except:
             print('Server timeout...')

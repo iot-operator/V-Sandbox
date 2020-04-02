@@ -2,8 +2,7 @@
 ## Requirements
 python 3
 ## Setup environment
-mkdir report/\
-mkdir final_report/\
+download QEMU images here: https://drive.google.com/open?id=1y0kzJBASRjVzbJrwR-Y9Dkr2nr8TOQpK\
 sudo apt-get update\
 sudo apt-get install -y qemu-kvm qemu virt-manager virt-viewer libvirt-bin\
 sudo apt-get install sshpass\
