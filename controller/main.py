@@ -52,10 +52,10 @@ def pre_analyze(elf):
         dst_lib = '/lib/'
         rsync('root', vm_ip, dst_lib, src_lib)
     else:
-        print('OK', end=' ')
-        src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
-        dst_lib = '/lib/'
-        rsync('root', vm_ip, dst_lib, src_lib)
+        print('OK')
+        # src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
+        # dst_lib = '/lib/'
+        # rsync('root', vm_ip, dst_lib, src_lib)
 
     print('Analyzing...')
     cmd = 'cd qemu/ && chmod +x ' + elf + ' && python main.py ' + elf + ' 10'

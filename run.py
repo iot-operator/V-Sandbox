@@ -39,6 +39,12 @@ def proc_folder(path):
 
 
 if __name__ == "__main__":
+    # Create_report folder
+    if not os.path.exists('final_report/'):
+        os.makedirs('final_report/')
+    if not os.path.exists('report/'):
+        os.makedirs('report/')
+
     path = sys.argv[1]
     if os.path.isdir(path):
         proc_folder(path)

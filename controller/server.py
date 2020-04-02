@@ -8,8 +8,9 @@ def send_bashlite(c):
         lines = f.readlines()
     for line in lines:
         try:
-            c.send(line.encode())
-            print('\033[91msend: \033[00m', line.encode())
+            cmd = line.encode()
+            c.send(cmd)
+            print('\033[91msend: \033[00m', cmd)
             time.sleep(3)
         except Exception as e:
             print('Exception: ' + str(e))
@@ -46,7 +47,7 @@ def send_mirai(c):
             except Exception as e:
                 print('Exception: ' + str(e))
                 break
-        elif data[:2] != '\x00\x00':
+        elif data[:1] != '\x00':
             try: 
                 c.send(atk[id])
                 print('\033[91msend: \033[00m', atk[id])
@@ -94,7 +95,7 @@ def server(host):
             return -1
 
         print('Connected to ' + str(addr[0]) + ':' + str(addr[1]))
-        time.sleep(1)
+        # time.sleep(1)
         sendThread = threading.Thread(target=send, args=(c,))
         sendThread.start()
         sendThread.join()
