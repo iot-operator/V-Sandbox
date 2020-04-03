@@ -95,6 +95,20 @@ def analyze_ccserver(elf, arch, report_dir):
         shutdown_vm(arch)
         exit(0)
 
+    print('Checking requested libs...', end=' ')
+    cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
+    exit_status, output = paramiko_client(vm_ip, cmd)
+    if 'not found' in output:
+        print('\nFound missing libs...', end=' ')
+        src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
+        dst_lib = '/lib/'
+        rsync('root', vm_ip, dst_lib, src_lib)
+    else:
+        print('OK')
+        # src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
+        # dst_lib = '/lib/'
+        # rsync('root', vm_ip, dst_lib, src_lib)
+
     with open('ip_list.txt', 'w') as f:
         for ip in ip_list:
             f.write(ip + '\n')

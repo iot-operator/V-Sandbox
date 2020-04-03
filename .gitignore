@@ -1,7 +1,8 @@
 .vscode/
+__pycache__/
+temp/
+screenlog.*
 final_report*/
 report*/
-vm/
-lib_repo/
-__pycache__
-screenlog.*
+vm*/
+ip_list.txt

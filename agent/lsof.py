@@ -22,41 +22,42 @@ class Lsof:
         obj['timestamp'] = int(now)
 
         obj['info'] = []
-        for line in data[1:-1]:
-            dev = siz = nod = True
-            if line[56] == ' ':
-                dev = False
-            if line[65] == ' ':
-                siz = False
-            if line[76] == ' ':
-                nod = False
-            temp = line.split(' ')
-            while '' in temp:
-                temp.remove('')
-            dat = {}
-            dat['COMMAND'] = temp[0].strip()
-            dat['PID'] = temp[1].strip()
-            dat['USER'] = temp[2].strip()
-            dat['FD'] = temp[3].strip()
-            dat['TYPE'] = temp[4].strip()
-            id = 5
-            if dev:
-                dat['DEVICE'] = temp[id].strip()
-                id += 1
-            else:
-                dat['DEVICE'] = ''
-            if siz:
-                dat['SIZE'] = temp[id].strip()
-                id += 1
-            else:
-                dat['SIZE'] = ''
-            if nod:
-                dat['NODE'] = temp[id].strip()
-                id += 1
-            else:
-                dat['NODE'] = ''
-            dat['NAME'] = temp[id].strip()
-            obj['info'].append(dat)
+        for line in data[1:]:
+            if len(line) > 76:
+                dev = siz = nod = True
+                if line[56] == ' ':
+                    dev = False
+                if line[65] == ' ':
+                    siz = False
+                if line[76] == ' ':
+                    nod = False
+                temp = line.split(' ')
+                while '' in temp:
+                    temp.remove('')
+                dat = {}
+                dat['COMMAND'] = temp[0].strip()
+                dat['PID'] = temp[1].strip()
+                dat['USER'] = temp[2].strip()
+                dat['FD'] = temp[3].strip()
+                dat['TYPE'] = temp[4].strip()
+                id = 5
+                if dev:
+                    dat['DEVICE'] = temp[id].strip()
+                    id += 1
+                else:
+                    dat['DEVICE'] = ''
+                if siz:
+                    dat['SIZE'] = temp[id].strip()
+                    id += 1
+                else:
+                    dat['SIZE'] = ''
+                if nod:
+                    dat['NODE'] = temp[id].strip()
+                    id += 1
+                else:
+                    dat['NODE'] = ''
+                dat['NAME'] = temp[id].strip()
+                obj['info'].append(dat)
         # print(obj)
         return obj
 

@@ -37,6 +37,8 @@ if __name__ == "__main__":
     lsof = Lsof(outputLsof)
     ldd = Lib(sys.argv[1], outputLdd)
 
+    ldd.start()
+    
     topThread = threading.Thread(target=top.start, args=())
     topThread.start()
     lsofThread = threading.Thread(target=lsof.start, args=())
@@ -45,7 +47,6 @@ if __name__ == "__main__":
     sniff.start()
 
     strace.start()
-    ldd.start()
 
     sniff.stop()
     strace.stop()

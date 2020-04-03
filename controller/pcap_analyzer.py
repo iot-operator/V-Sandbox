@@ -2,6 +2,7 @@ from scapy.utils import RawPcapReader
 from scapy.layers.l2 import Ether
 from scapy.layers.inet import IP, TCP
 import ipaddress
+import sys
 
 
 def is_ip_local(ipaddr):
@@ -51,3 +52,9 @@ def process_pcap(file_name):
 
     return ret
 
+
+if __name__ == "__main__":
+    ip_list = process_pcap(sys.argv[1])
+    with open('ip_list.txt', 'w') as f:
+        for ip in ip_list:
+            f.write(ip + '\n')

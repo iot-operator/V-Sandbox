@@ -69,26 +69,27 @@ class Top:
             obj['avail_mem'] = temp[1].strip()[:temp[1].strip().find(' ')]
 
         obj['process'] = []
-        for line in data[7:-1]:
+        for line in data[7]:
+            if len(line) > 11:
             # print(line)
-            temp = line.split(' ')
-            while '' in temp:
-                temp.remove('')
-            dat = {}
-            dat['PID'] = temp[0].strip()
-            dat['USER'] = temp[1].strip()
-            dat['PR'] = temp[2].strip()
-            dat['NI'] = temp[3].strip()
-            dat['VIRT'] = temp[4].strip()
-            dat['RES'] = temp[5].strip()
-            dat['SHR'] = temp[6].strip()
-            dat['S'] = temp[7].strip()
-            dat['%CPU'] = temp[8].strip()
-            dat['%MEM'] = temp[9].strip()
-            dat['TIME+'] = temp[10].strip()
-            if len(temp) == 12:
-                dat['COMMAND'] = temp[11].strip()
-            obj['process'].append(dat)
+                temp = line.split(' ')
+                while '' in temp:
+                    temp.remove('')
+                dat = {}
+                dat['PID'] = temp[0].strip()
+                dat['USER'] = temp[1].strip()
+                dat['PR'] = temp[2].strip()
+                dat['NI'] = temp[3].strip()
+                dat['VIRT'] = temp[4].strip()
+                dat['RES'] = temp[5].strip()
+                dat['SHR'] = temp[6].strip()
+                dat['S'] = temp[7].strip()
+                dat['%CPU'] = temp[8].strip()
+                dat['%MEM'] = temp[9].strip()
+                dat['TIME+'] = temp[10].strip()
+                if len(temp) == 12:
+                    dat['COMMAND'] = temp[11].strip()
+                obj['process'].append(dat)
         return obj
 
     def start(self):
