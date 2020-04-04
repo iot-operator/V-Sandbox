@@ -91,6 +91,7 @@ def analyze_ccserver(elf, arch, lib, report_dir):
     if len(ip_list) == 0:
         print('Finalizing report...', end=' ')
         shutil.move('report/' + report_dir, 'final_report/')
+        shutil.move('info.json', 'final_report/' + report_dir)
         print('Done')
         return 0
 

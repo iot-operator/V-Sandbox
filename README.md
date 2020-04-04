@@ -2,6 +2,9 @@
 ## Requirements
 python 3
 ## Setup environment
+download folder vm/ (including qemu images) and put it into folder vSandbox/ \
+link: \
+
 sudo apt-get update\
 sudo apt-get install -y qemu-kvm qemu virt-manager virt-viewer libvirt-bin\
 sudo apt-get install sshpass\

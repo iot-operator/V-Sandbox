@@ -18,7 +18,8 @@ def send_bashlite(c):
         try:
             c.settimeout(1)
             data = c.recv(1024)
-            print('\033[92mrecv: \033[00m', data)
+            if data != b'':
+                print('\033[92mrecv: \033[00m', data)
         except:
             pass
     c.close()
@@ -37,7 +38,8 @@ def send_mirai(c):
         try:
             c.settimeout(1)
             data = c.recv(1024)
-            print('\033[92mrecv: \033[00m', data)
+            if data != b'':
+                print('\033[92mrecv: \033[00m', data)
         except:
             pass
         if data == ping:
