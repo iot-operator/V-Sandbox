@@ -38,7 +38,7 @@ if __name__ == "__main__":
     ldd = Lib(sys.argv[1], outputLdd)
 
     ldd.start()
-    
+
     topThread = threading.Thread(target=top.start, args=())
     topThread.start()
     lsofThread = threading.Thread(target=lsof.start, args=())

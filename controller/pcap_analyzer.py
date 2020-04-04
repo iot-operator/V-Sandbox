@@ -1,8 +1,9 @@
+import ipaddress
+import sys
+
 from scapy.utils import RawPcapReader
 from scapy.layers.l2 import Ether
 from scapy.layers.inet import IP, TCP
-import ipaddress
-import sys
 
 
 def is_ip_local(ipaddr):

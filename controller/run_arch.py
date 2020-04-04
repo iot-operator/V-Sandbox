@@ -7,7 +7,8 @@ from utils import check_file_arch
 
 
 def proc_file(path):
-    arch = check_file_arch(path)
+    info = check_file_arch(path)
+    arch = info['arch']
     if arch == sys.argv[2]:
         p = subprocess.Popen('python3 controller/main.py ' + path, shell=True)
         p.wait()

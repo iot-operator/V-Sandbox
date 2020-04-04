@@ -17,7 +17,6 @@ class Strace:
         self.output = output
         self.timeout = timeout
 
-
     def start(self):
         print('strace start...')
         self.proc = subprocess.Popen(['timeout', '-k', '1', str(self.timeout), 'strace', '-to', 'temp', '-ff', self.target], stdout=subprocess.PIPE,
@@ -40,7 +39,7 @@ class Strace:
                 pid = file[file.rfind('.')+1:].strip()
                 if os.path.getsize(file) == 0 and pid not in checked:
                     child = subprocess.Popen(['timeout', '-k', '1', str(self.timeout), 'strace', '-to', 'temp_' + str(index), '-ffp', pid], stdout=subprocess.PIPE,
-                                     stderr=subprocess.PIPE)
+                                             stderr=subprocess.PIPE)
                     child_pool.append(child)
                     pid = file[file.find('.')+1:]
                     print('detected untraced proc... ' + pid)

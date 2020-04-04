@@ -4,7 +4,7 @@ import threading
 
 def send(c):
     while True:
-        cmd = input() 
+        cmd = input()
         c.send(cmd.encode())
         print('\033[91msend: \033[00m' + cmd)
         if cmd == '':

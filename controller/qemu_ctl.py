@@ -1,9 +1,10 @@
 from __future__ import print_function
-import paramiko
 import subprocess
 import signal
 import sys
 import os
+
+import paramiko
 
 
 def scp_to_vm(local_path, remote_user, remote_host, remote_path, r=False):
@@ -47,7 +48,7 @@ def scp_to_host(remote_user, remote_host, remote_path, local_path, r=False):
 def rsync(remote_user, remote_host, remote_path, local_path):
     p = subprocess.Popen("sshpass -p 'root' rsync -q -avz --ignore-existing %s %s@%s:%s" %
                          (local_path, remote_user, remote_host, remote_path), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    
+
     output = p.communicate()[1].decode('utf-8')
     print('Moved libs')
 

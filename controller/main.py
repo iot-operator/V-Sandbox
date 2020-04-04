@@ -1,18 +1,20 @@
 from __future__ import print_function
-import paramiko
 import subprocess
 import signal
 import sys
 import os
-from qemu_ctl import *
-from server import server
-from pcap_analyzer import process_pcap
-from utils import *
 import threading
 import time
 import shutil
 import queue
 import json
+
+import paramiko
+
+from qemu_ctl import *
+from server import server
+from pcap_analyzer import process_pcap
+from utils import *
 
 
 vm_ip_dict = {
@@ -106,7 +108,7 @@ def analyze_ccserver(elf, arch, lib, report_dir):
         cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
         exit_status, output = paramiko_client(vm_ip, cmd)
         if 'not found' in output:
-            print('Moving libs...', end = ' ')
+            print('Moving libs...', end=' ')
             src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
             dst_lib = '/lib/'
             rsync('root', vm_ip, dst_lib, src_lib)
@@ -119,7 +121,8 @@ def analyze_ccserver(elf, arch, lib, report_dir):
     paramiko_client_ipt(vm_ip)
 
     que = queue.Queue()
-    serverThread = threading.Thread(target=lambda q, arg: q.put(server(arg)), args=(que, '', ))
+    serverThread = threading.Thread(
+        target=lambda q, arg: q.put(server(arg)), args=(que, '', ))
     serverThread.start()
 
     cmd = 'cd qemu/ && chmod +x ' + elf + ' && python main.py ' + elf + ' 90'
@@ -150,10 +153,11 @@ if __name__ == "__main__":
     t = time.time()
     print('__________vSandbox__________')
     elf = '.' + sys.argv[1][sys.argv[1].rfind('/'):]
+
     print('Stage 1: Pre-analyze')
     arch, lib, report_dir = pre_analyze(elf)
     # arch, report_dir = 'i386', '467b70c57106d6031ca1fca76c302ec4d07da253f7d4043b60bdafd7b4d33390_1585795870/'
-    print('-'*24)
-    print('Stage 2: Analyzing with C&C Server')
+
+    print('-'*24 + '\nStage 2: Analyzing with C&C Server')
     analyze_ccserver(elf, arch, lib, report_dir)
     print('Analyzing done in ' + str(int(time.time()-t)) + '\n')

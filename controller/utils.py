@@ -1,7 +1,7 @@
 from __future__ import print_function
 import os
-import paramiko
 import time
+import paramiko
 from qemu_ctl import scp_to_vm
 
 
@@ -47,7 +47,7 @@ def check_file_arch(file):
         info['linked-libs'] = 'static'
     else:
         info['linked-libs'] = 'dynamic'
-        
+
     return info
 
 
