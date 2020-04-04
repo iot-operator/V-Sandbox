@@ -12,6 +12,7 @@ import threading
 import time
 import shutil
 import queue
+import json
 
 
 vm_ip_dict = {
@@ -29,8 +30,14 @@ def pre_analyze(elf):
     print(sys.argv[1])
 
     print('CPU architecture...', end=' ')
-    arch = check_file_arch(sys.argv[1])
-    if arch == '':
+    info = check_file_arch(sys.argv[1])
+    with open('info.json', 'w') as f:
+        json.dump(info, f)
+
+    arch = info['arch']
+    lib = info['linked-libs']
+
+    if arch == 'Unsupported':
         exit(0)
 
     print('Starting VM...')
@@ -43,19 +50,19 @@ def pre_analyze(elf):
         shutdown_vm(arch)
         exit(0)
 
-    print('Checking requested libs...', end=' ')
-    cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
-    exit_status, output = paramiko_client(vm_ip, cmd)
-    if 'not found' in output:
-        print('\nFound missing libs...', end=' ')
-        src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
-        dst_lib = '/lib/'
-        rsync('root', vm_ip, dst_lib, src_lib)
+    if lib == 'dynamic':
+        print('Checking requested libs...', end=' ')
+        cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
+        exit_status, output = paramiko_client(vm_ip, cmd)
+        if 'not found' in output:
+            print('\nFound missing libs...', end=' ')
+            src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
+            dst_lib = '/lib/'
+            rsync('root', vm_ip, dst_lib, src_lib)
+        else:
+            print('OK')
     else:
-        print('OK')
-        # src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
-        # dst_lib = '/lib/'
-        # rsync('root', vm_ip, dst_lib, src_lib)
+        print('Static, no need to check requested libs')
 
     print('Analyzing...')
     cmd = 'cd qemu/ && chmod +x ' + elf + ' && python main.py ' + elf + ' 10'
@@ -73,10 +80,10 @@ def pre_analyze(elf):
 
     print('Shutting down VM...', end=' ')
     shutdown_vm(arch)
-    return arch, report_dir
+    return arch, lib, report_dir
 
 
-def analyze_ccserver(elf, arch, report_dir):
+def analyze_ccserver(elf, arch, lib, report_dir):
     ip_list = process_pcap('./report/' + report_dir + 'tcpdump.pcap')
     print('C&C Server detected... ' + str(len(ip_list)) + ' IP(s)')
     if len(ip_list) == 0:
@@ -95,19 +102,16 @@ def analyze_ccserver(elf, arch, report_dir):
         shutdown_vm(arch)
         exit(0)
 
-    print('Checking requested libs...', end=' ')
-    cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
-    exit_status, output = paramiko_client(vm_ip, cmd)
-    if 'not found' in output:
-        print('\nFound missing libs...', end=' ')
-        src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
-        dst_lib = '/lib/'
-        rsync('root', vm_ip, dst_lib, src_lib)
-    else:
-        print('OK')
-        # src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
-        # dst_lib = '/lib/'
-        # rsync('root', vm_ip, dst_lib, src_lib)
+    if lib == 'dynamic':
+        cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
+        exit_status, output = paramiko_client(vm_ip, cmd)
+        if 'not found' in output:
+            print('Moving libs...', end = ' ')
+            src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
+            dst_lib = '/lib/'
+            rsync('root', vm_ip, dst_lib, src_lib)
+        else:
+            print('OK')
 
     with open('ip_list.txt', 'w') as f:
         for ip in ip_list:
@@ -127,20 +131,19 @@ def analyze_ccserver(elf, arch, report_dir):
         report_dir = output[-2][2:]
         scp_to_host('root', vm_ip, '/root/qemu/' +
                     report_dir, './final_report/', r=True)
-    elif exit_status == 'timeout':
+    else:
+        if exit_status != 'timeout':
+            print('Failed\n' + str(output).strip())
         print('Finalizing report...', end=' ')
         shutil.move('report/' + report_dir, 'final_report/')
         print('Done')
-    else:
-        print('Failed\n' + str(output).strip())
-        shutdown_vm(arch)
-        exit(0)
 
+    shutil.move('info.json', 'final_report/' + report_dir)
     shutil.move('ip_list.txt', 'final_report/' + report_dir)
 
     print('Shutting down VM...', end=' ')
     shutdown_vm(arch)
-    return arch, report_dir
+    return 0
 
 
 if __name__ == "__main__":
@@ -148,9 +151,9 @@ if __name__ == "__main__":
     print('__________vSandbox__________')
     elf = '.' + sys.argv[1][sys.argv[1].rfind('/'):]
     print('Stage 1: Pre-analyze')
-    arch, report_dir = pre_analyze(elf)
+    arch, lib, report_dir = pre_analyze(elf)
     # arch, report_dir = 'i386', '467b70c57106d6031ca1fca76c302ec4d07da253f7d4043b60bdafd7b4d33390_1585795870/'
     print('-'*24)
     print('Stage 2: Analyzing with C&C Server')
-    analyze_ccserver(elf, arch, report_dir)
+    analyze_ccserver(elf, arch, lib, report_dir)
     print('Analyzing done in ' + str(int(time.time()-t)) + '\n')

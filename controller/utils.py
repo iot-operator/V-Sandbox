@@ -7,34 +7,48 @@ from qemu_ctl import scp_to_vm
 
 def check_file_arch(file):
     output = os.popen('file ' + file)
+    name = str(file)
     ret = output.read()
-    arch = ''
+    info = dict()
+
+    info['name'] = name[name.rfind('/')+1:]
     if 'ELF' in ret:
+        info['type'] = 'ELF'
         if 'ARM' in ret:
-            arch = 'arm'
+            info['arch'] = 'arm'
             print('ARM')
         elif 'MIPS' in ret:
             if 'MSB' in ret:
-                arch = 'mips'
+                info['arch'] = 'mips'
             else:
-                arch = 'mipsel'
-            print('MIPS (' + arch + ')')
+                info['arch'] = 'mipsel'
+            print('MIPS (' + info[arch] + ')')
         elif 'Intel' in ret:
-            arch = 'i386'
-            print('Intel 80386 (i386)')
+            info['arch'] = 'i386'
+            print('Intel 80386')
         elif 'x86-64' in ret:
-            arch = 'amd64'
+            info['arch'] = 'amd64'
             print('x86-64')
         elif 'PowerPC' in ret:
-            arch = 'ppc'
+            info['arch'] = 'ppc'
             print('PowerPC')
         else:
-            print('Unsupported')
+            info['arch'] = 'Unsupported'
             print(ret)
     else:
-        print('Unsupported!')
-        print(ret)
-    return arch
+        info['type'] = 'Unsupported'
+
+    if 'LSB' in ret:
+        info['endianess'] = 'little'
+    else:
+        info['endianess'] = 'big'
+
+    if 'static' in ret:
+        info['linked-libs'] = 'static'
+    else:
+        info['linked-libs'] = 'dynamic'
+        
+    return info
 
 
 def paramiko_client(vm_ip, cmd, thread=None, que=None):
