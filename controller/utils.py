@@ -22,7 +22,7 @@ def check_file_arch(file):
                 info['arch'] = 'mips'
             else:
                 info['arch'] = 'mipsel'
-            print('MIPS (' + info[arch] + ')')
+            print('MIPS (' + info['arch'] + ')')
         elif 'Intel' in ret:
             info['arch'] = 'i386'
             print('Intel 80386')
