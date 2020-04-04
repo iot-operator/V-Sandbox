@@ -3,12 +3,12 @@
 python 3
 ## Setup environment
 download folder vm/ (including qemu images) and put it into folder vSandbox/ \
-link: \
+link: 
 
 sudo apt-get update\
 sudo apt-get install -y qemu-kvm qemu virt-manager virt-viewer libvirt-bin\
 sudo apt-get install sshpass\
-sudo apt-get install uml-utilities bridge-utils\
+sudo apt-get install uml-utilities bridge-utils
 
 sudo gedit /etc/network/interfaces
 ```
@@ -29,15 +29,16 @@ sudo cp qemu-ifup /etc/\
 sudo chmod 755 /etc/qemu-ifup\
 sudo mkdir /usr/share/openbios\
 sudo cp openbios-ppc /usr/share/openbios\
-sudo chmod +x sandbox/*.sh
+sudo chmod +x sandbox/*.sh\
+```
 sudo chmod +x lib/*/*
-
+```
 pip3 install paramiko\
 pip3 install scapy
 
 sudo visudo
 ```
-Defaults    timestamp_timeout=-1\
+Defaults    timestamp_timeout=-1
 ```
 nano ~/.ssh/config
 ```
