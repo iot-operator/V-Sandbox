@@ -3,6 +3,7 @@
 python 3
 ## Setup environment
 download folder vm/ (including qemu images) and put it into folder vSandbox/ \
+chmod +x all files in vm/ and lib_repo/ \
 link: 
 
 sudo apt-get update\
@@ -28,11 +29,8 @@ sudo ifup br0\
 sudo cp qemu-ifup /etc/\
 sudo chmod 755 /etc/qemu-ifup\
 sudo mkdir /usr/share/openbios\
-sudo cp openbios-ppc /usr/share/openbios\
-sudo chmod +x sandbox/*.sh\
-```
-sudo chmod +x lib/*/*
-```
+sudo cp openbios-ppc /usr/share/openbios
+
 pip3 install paramiko\
 pip3 install scapy
 
