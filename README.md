@@ -3,8 +3,7 @@
 python 3
 ## Setup environment
 QEMU images download link: 
-```
-```
+[Google Drive](https://drive.google.com/open?id=1pog7OGsiYfWaJ5QyOouxx9CAHpUnQwU5)
 
 chmod +x all files in vm/ and lib_repo/ \
 sudo apt-get update\
