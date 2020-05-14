@@ -1,11 +1,12 @@
-# vSandbox
+# V-IoT Sandbox
 ## Requirements
 python 3
 ## Setup environment
-download folder vm/ (including qemu images) and put it into folder vSandbox/ \
-chmod +x all files in vm/ and lib_repo/ \
-link: 
+QEMU images download link: 
+```
+```
 
+chmod +x all files in vm/ and lib_repo/ \
 sudo apt-get update\
 sudo apt-get install -y qemu-kvm qemu virt-manager virt-viewer libvirt-bin\
 sudo apt-get install sshpass\
