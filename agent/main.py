@@ -5,7 +5,7 @@ import subprocess
 import time
 from sniffer import Sniffer
 from strace import Strace
-from utils import Top
+from top import Top
 from lsof import Lsof
 from lib import Lib
 import threading

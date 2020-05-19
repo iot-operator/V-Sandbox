@@ -69,7 +69,7 @@ class Top:
             obj['avail_mem'] = temp[1].strip()[:temp[1].strip().find(' ')]
 
         obj['process'] = []
-        for line in data[7]:
+        for line in data[7:]:
             if len(line) > 11:
                 # print(line)
                 temp = line.split(' ')

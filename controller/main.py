@@ -40,6 +40,7 @@ def pre_analyze(elf):
     lib = info['linked-libs']
 
     if arch == 'Unsupported':
+        print('Unsupported CPU architecture')
         exit(0)
 
     print('Starting VM...')
