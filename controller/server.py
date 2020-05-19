@@ -64,7 +64,8 @@ def send_mirai(c):
 
 def send(c):
     data = b''
-    while data == b'':
+    t = time.time()
+    while data == b'' and time.time() - t <= 5:
         try:
             c.settimeout(5)
             data = c.recv(1024)
