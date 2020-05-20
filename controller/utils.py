@@ -51,7 +51,7 @@ def check_file_arch(file):
     return info
 
 
-def paramiko_client(vm_ip, cmd, thread=None, que=None):
+def paramiko_client(vm_ip, cmd, thread=None, que=None, debug=False):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     client.connect(vm_ip, username='root', password='root')
@@ -68,6 +68,8 @@ def paramiko_client(vm_ip, cmd, thread=None, que=None):
     else:
         exit_status = stdout.channel.recv_exit_status()
         output = stdout.read().decode('utf-8')
+        if debug:
+            print(output)
     client.close()
     return exit_status, output
 

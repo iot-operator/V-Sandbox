@@ -87,7 +87,10 @@ def pre_analyze(elf):
 
 
 def analyze_ccserver(elf, arch, lib, report_dir):
-    ip_list = process_pcap('./report/' + report_dir + 'tcpdump.pcap')
+    ip_list, fl = process_pcap('./report/' + report_dir + 'tcpdump.pcap')
+    if not fl:
+        print('Unexpected connection error... Exitting')
+        return 0
     print('C&C Server detected... ' + str(len(ip_list)) + ' IP(s)')
     if len(ip_list) == 0:
         print('Finalizing report...', end=' ')
@@ -133,9 +136,9 @@ def analyze_ccserver(elf, arch, lib, report_dir):
     if exit_status == 0:
         print('Receiving report...', end=' ')
         output = output.split('\n')
-        report_dir = output[-2][2:]
+        final_report_dir = output[-2][2:]
         scp_to_host('root', vm_ip, '/root/qemu/' +
-                    report_dir, './final_report/', r=True)
+                    final_report_dir, './final_report/', r=True)
     else:
         if exit_status != 'timeout':
             print('Failed\n' + str(output).strip())
@@ -143,8 +146,18 @@ def analyze_ccserver(elf, arch, lib, report_dir):
         shutil.move('report/' + report_dir, 'final_report/')
         print('Done')
 
-    shutil.move('info.json', 'final_report/' + report_dir)
-    shutil.move('ip_list.txt', 'final_report/' + report_dir)
+    try:
+        shutil.move('info.json', 'final_report/' + final_report_dir)
+        shutil.move('ip_list.txt', 'final_report/' + final_report_dir)
+    except Exception as e:
+        print(e)
+
+    if not os.path.exists('final_report/' + final_report_dir):
+        print('Unexpected connection error...')
+        shutil.move('report/' + report_dir, 'final_report/')
+        shutil.move('info.json', 'final_report/' + report_dir)
+        shutil.move('ip_list.txt', 'final_report/' + report_dir)
+        print('Finalized report.')
 
     print('Shutting down VM...', end=' ')
     shutdown_vm(arch)

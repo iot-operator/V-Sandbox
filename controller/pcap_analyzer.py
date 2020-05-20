@@ -33,25 +33,29 @@ def is_ip_local(ipaddr):
 
 def process_pcap(file_name):
     # print('Opening {}...'.format(file_name))
-
+    fl = True
     ret = set()
 
-    for (pkt_data, pkt_metadata,) in RawPcapReader(file_name):
-        ether_pkt = Ether(pkt_data)
-        if 'type' not in ether_pkt.fields:
-            # LLC frames will have 'len' instead of 'type'.
-            # We disregard those
-            continue
+    try:
+        for (pkt_data, pkt_metadata,) in RawPcapReader(file_name):
+            ether_pkt = Ether(pkt_data)
+            if 'type' not in ether_pkt.fields:
+                # LLC frames will have 'len' instead of 'type'.
+                # We disregard those
+                continue
 
-        if ether_pkt.type != 0x0800:
-            # disregard non-IPv4 packets
-            continue
+            if ether_pkt.type != 0x0800:
+                # disregard non-IPv4 packets
+                continue
 
-        ip_pkt = ether_pkt[IP]
-        if not is_ip_local(str(ip_pkt.dst)):
-            ret.add(ip_pkt.dst)
+            ip_pkt = ether_pkt[IP]
+            if not is_ip_local(str(ip_pkt.dst)):
+                ret.add(ip_pkt.dst)
+    except Exception as e:
+        fl = False
+        print(e)
 
-    return ret
+    return ret, fl
 
 
 if __name__ == "__main__":

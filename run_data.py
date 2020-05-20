@@ -19,7 +19,7 @@ if __name__ == "__main__":
     with open(sys.argv[1]+'malware.csv') as f:
         data = f.readlines()
 
-    for line in data[1:2]:
+    for line in data[:250]:
         line = line[:-1]
         file_name, type_ = line.split(',')
         continue_fl = False
