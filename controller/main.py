@@ -144,6 +144,7 @@ def analyze_ccserver(elf, arch, lib, report_dir):
             print('Failed\n' + str(output).strip())
         print('Finalizing report...', end=' ')
         shutil.move('report/' + report_dir, 'final_report/')
+        final_report_dir = report_dir
         print('Done')
 
     try:
