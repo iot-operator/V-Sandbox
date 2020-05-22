@@ -45,5 +45,5 @@ host 192.168.122.*
     UserKnownHostsFile=/dev/null
 ```
 ## Run sandbox
-python3 run.py <file_or_folder>
+python3 run.py <file_or_folder>\
 reports are generated in final_folder/
