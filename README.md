@@ -1,4 +1,4 @@
-# V-IoT Sandbox
+# V-Sandbox
 ## Requirements
 python 3
 ## Setup environment
@@ -46,4 +46,4 @@ host 192.168.122.*
 ```
 ## Run sandbox
 python3 run.py <file_or_folder>\
-reports are generated in final_folder/
+reports are generated in final_report/
