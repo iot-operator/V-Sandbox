@@ -5,9 +5,9 @@ screenlog.*
 final_report*/
 report*/
 vm*/
+test*/
 info.json
 ip_list.txt
-test*/
 list_benign.csv
 run_benign.py
 run_data.py
