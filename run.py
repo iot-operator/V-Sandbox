@@ -19,13 +19,9 @@ def proc_folder(path):
             for _, dirs, _ in os.walk('final_report'):
                 for dir in dirs:
                     if str(file) in dir:
-                        print('Already analyzed')
+                        print('\033[93mINFO | \033[00mFound generated report')
                         continue_fl = True
-            for _, dirs, _ in os.walk('report'):
-                for dir in dirs:
-                    if str(file) in dir:
-                        print('Already analyzed')
-                        continue_fl = True
+                        break
 
             if not continue_fl:
                 if path.endswith('/'):
@@ -35,6 +31,7 @@ def proc_folder(path):
                 proc_file(file_path)
             k = subprocess.Popen('sudo pkill qemu-system-', shell=True)
             k.wait()
+            print(80*'-')
     return 0
 
 
@@ -51,4 +48,4 @@ if __name__ == "__main__":
     elif os.path.isfile(path):
         proc_file(path)
     else:
-        print('Input is not a directory or normal file')
+        print('\033[93mINFO | \033[00mInput is not a file or directory')

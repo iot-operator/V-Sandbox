@@ -61,6 +61,7 @@ def pre_analyze(elf):
             print('\033[92mSE   | \033[00mFound missing libs')
             src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
             dst_lib = '/lib/'
+            print('\033[92mSE   | \033[00mTransfering libs')
             rsync('root', vm_ip, dst_lib, src_lib)
         else:
             print('\033[92mSE   | \033[00mRequested libs are OK')
@@ -122,6 +123,7 @@ def analyze_ccserver(elf, arch, lib, report_dir):
             print('\033[92mSE   | \033[00mFound missing libs')
             src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
             dst_lib = '/lib/'
+            print('\033[92mSE   | \033[00mTransfering libs')
             rsync('root', vm_ip, dst_lib, src_lib)
         else:
             print('\033[92mSE   | \033[00mRequested libs are OK')

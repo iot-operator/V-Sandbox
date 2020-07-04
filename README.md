@@ -1,8 +1,9 @@
 # V-Sandbox
+![Demo](demo.png?raw=true "V-Sandbox Demo")
 ## Requirements
 python 3
 ## Setup environment
-QEMU images download link: 
+QEMU images download link (folder vm/): 
 [Google Drive](https://drive.google.com/open?id=1pog7OGsiYfWaJ5QyOouxx9CAHpUnQwU5)
 
 chmod +x all files in vm/ and lib_repo/ \
@@ -44,6 +45,6 @@ host 192.168.122.*
     StrictHostKeyChecking no
     UserKnownHostsFile=/dev/null
 ```
-## Run sandbox
+## Run
 python3 run.py <file_or_folder>\
-reports are generated in final_report/
+All reports are saved in folder final_report/

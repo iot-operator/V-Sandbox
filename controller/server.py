@@ -13,7 +13,7 @@ def send_bashlite(c):
             print('\033[91mC&C  | \033[00mSend: ', cmd)
             time.sleep(3)
         except Exception as e:
-            print('Exception: ' + str(e))
+            print('\033[91mC&C  | \033[00mException: ' + str(e))
             break
         try:
             c.settimeout(1)
@@ -45,20 +45,20 @@ def send_mirai(c):
         if data == ping:
             try:
                 c.send(ping)
-                print('\033[91mC&C  | \033[00mSend: ', cmd)
+                print('\033[91mC&C  | \033[00mSend: ', ping)
             except Exception as e:
-                print('Exception: ' + str(e))
+                print('\033[91mC&C  | \033[00mException: ' + str(e))
                 break
         elif data[:1] != '\x00':
             try:
                 c.send(atk[id])
-                print('\033[91mC&C  | \033[00mSend: ', cmd)
+                print('\033[91mC&C  | \033[00mSend: ', atk[id])
                 time.sleep(3)
                 id += 1
                 if id == len(atk):
                     break
             except Exception as e:
-                print('Exception: ' + str(e))
+                print('\033[91mC&C  | \033[00mException: ' + str(e))
                 break
 
 
