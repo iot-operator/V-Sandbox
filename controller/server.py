@@ -10,7 +10,7 @@ def send_bashlite(c):
         try:
             cmd = line.encode()
             c.send(cmd)
-            print('\033[91msend: \033[00m', cmd)
+            print('\033[91mC&C  | \033[00mSend: ', cmd)
             time.sleep(3)
         except Exception as e:
             print('Exception: ' + str(e))
@@ -19,7 +19,7 @@ def send_bashlite(c):
             c.settimeout(1)
             data = c.recv(1024)
             if data != b'':
-                print('\033[92mrecv: \033[00m', data)
+                print('\033[91mC&C  | \033[00mRecv: ', data)
         except:
             pass
     c.close()
@@ -39,20 +39,20 @@ def send_mirai(c):
             c.settimeout(1)
             data = c.recv(1024)
             if data != b'':
-                print('\033[92mrecv: \033[00m', data)
+                print('\033[91mC&C  | \033[00mRecv: ', data)
         except:
             pass
         if data == ping:
             try:
                 c.send(ping)
-                print('\033[91msend: \033[00m', ping)
+                print('\033[91mC&C  | \033[00mSend: ', cmd)
             except Exception as e:
                 print('Exception: ' + str(e))
                 break
         elif data[:1] != '\x00':
             try:
                 c.send(atk[id])
-                print('\033[91msend: \033[00m', atk[id])
+                print('\033[91mC&C  | \033[00mSend: ', cmd)
                 time.sleep(3)
                 id += 1
                 if id == len(atk):
@@ -69,7 +69,7 @@ def send(c):
         try:
             c.settimeout(5)
             data = c.recv(1024)
-            print('\033[92mrecv: \033[00m', data)
+            print('\033[91mC&C  | \033[00mRecv: ', data)
         except:
             pass
 
@@ -87,23 +87,24 @@ def server(host):
     s.bind((host, port))
     s.listen(5)
 
-    print("Server is listening...")
+    print('\033[91mC&C  | \033[00mC&C Server is listeing')
 
     while True:
         try:
             s.settimeout(30)
             c, addr = s.accept()
         except:
-            print('Server timeout...')
+            print('\033[91mC&C  | \033[00mTimeout')
             return -1
 
-        print('Connected to ' + str(addr[0]) + ':' + str(addr[1]))
+        print('\033[91mC&C  | \033[00mConnected to ' +
+              str(addr[0]) + ':' + str(addr[1]))
         # time.sleep(1)
         sendThread = threading.Thread(target=send, args=(c,))
         sendThread.start()
         sendThread.join()
         s.close()
-        print('\nServer closed. Waiting VM...')
+        print('\033[91mC&C  | \033[00mServer closed')
         return 0
 
 

@@ -29,9 +29,7 @@ server_ip = '192.168.122.1:12345'
 
 
 def pre_analyze(elf):
-    print(sys.argv[1])
-
-    print('CPU architecture...', end=' ')
+    print('\033[93mEMF  | \033[00mProcessing file: ' + sys.argv[1])
     info = check_file_arch(sys.argv[1])
     with open('info.json', 'w') as f:
         json.dump(info, f)
@@ -40,48 +38,52 @@ def pre_analyze(elf):
     lib = info['linked-libs']
 
     if arch == 'Unsupported':
-        print('Unsupported CPU architecture')
+        print('\033[93mEMF  | \033[00mCPU architecture is not supported. Exitting')
         exit(0)
+    print('\033[93mEMF  | \033[00mCPU architecture: ' + arch)
 
-    print('Starting VM...')
+    print('\033[92mSE   | \033[00mStarting QEMU virtual machine')
     start_vm(arch)
 
     vm_ip = vm_ip_dict[arch]
 
-    print('Copying ELF to VM...', end=' ')
+    print('\033[92mSE   | \033[00mTransfering ELF')
     if scp_to_vm(sys.argv[1], 'root', vm_ip, '/root/qemu') == 1:
+        print('\033[92mSE   | \033[00mTransfering failed. Exitting')
         shutdown_vm(arch)
         exit(0)
 
     if lib == 'dynamic':
-        print('Checking requested libs...', end=' ')
+        print('\033[92mSE   | \033[00mChecking requested libs')
         cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
         exit_status, output = paramiko_client(vm_ip, cmd)
         if 'not found' in output:
-            print('\nFound missing libs...', end=' ')
+            print('\033[92mSE   | \033[00mFound missing libs')
             src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
             dst_lib = '/lib/'
             rsync('root', vm_ip, dst_lib, src_lib)
         else:
-            print('OK')
+            print('\033[92mSE   | \033[00mRequested libs are OK')
     else:
-        print('Static, no need to check requested libs')
+        print('\033[92mSE   | \033[00mELF is statically-linked')
 
-    print('Analyzing...')
+    print('\033[92mSE   | \033[00mAnalyzing')
     cmd = 'cd qemu/ && chmod +x ' + elf + ' && python main.py ' + elf + ' 10'
     exit_status, output = paramiko_client(vm_ip, cmd)
     if exit_status == 0:
-        print('Receiving report...', end=' ')
+        print('\033[94mRDP  | \033[00mGenerating report')
         output = output.split('\n')
         report_dir = output[-2][2:]
         scp_to_host('root', vm_ip, '/root/qemu/' +
                     report_dir, './report/', r=True)
+        print('\033[94mRDP  | \033[00mComplete')
     else:
-        print('Failed\n' + str(output).strip())
+        print('\033[94mRDP  | \033[00mTransfering report failed\n' +
+              str(output).strip())
         shutdown_vm(arch)
         exit(0)
 
-    print('Shutting down VM...', end=' ')
+    print('\033[92mSE   | \033[00mShutting down QEMU')
     shutdown_vm(arch)
     return arch, lib, report_dir
 
@@ -89,91 +91,97 @@ def pre_analyze(elf):
 def analyze_ccserver(elf, arch, lib, report_dir):
     ip_list, fl = process_pcap('./report/' + report_dir + 'tcpdump.pcap')
     if not fl:
-        print('Unexpected connection error... Exitting')
-        return 0
-    print('C&C Server detected... ' + str(len(ip_list)) + ' IP(s)')
-    if len(ip_list) == 0:
-        print('Finalizing report...', end=' ')
-        shutil.move('report/' + report_dir, 'final_report/')
-        shutil.move('info.json', 'final_report/' + report_dir)
-        print('Done')
+        print('\033[95mRDM  | \033[00mUnexpected error occured. Exitting')
         return 0
 
-    print('Starting VM...')
+    if len(ip_list) == 0:
+        print('\033[95mRDM  | \033[00mStopping analyzing')
+        print('\033[95mRDM  | \033[00mFinalizing report')
+        shutil.move('report/' + report_dir, 'final_report/')
+        shutil.move('info.json', 'final_report/' + report_dir)
+        print('\033[95mRDM  | \033[00mComplete')
+        return 0
+
+    print('\033[95mRDM  | \033[00mC&C IPs are found. Rerun Sannbox')
+    print('\033[92mSE   | \033[00mStarting QEMU virtual machine')
     start_vm(arch)
 
     vm_ip = vm_ip_dict[arch]
 
-    print('Copying ELF to VM...', end=' ')
+    print('\033[92mSE   | \033[00mTransfering ELF')
     if scp_to_vm(sys.argv[1], 'root', vm_ip, '/root/qemu') == 1:
+        print('\033[92mSE   | \033[00mTransfering failed. Exitting')
         shutdown_vm(arch)
         exit(0)
 
     if lib == 'dynamic':
+        print('\033[92mSE   | \033[00mChecking requested libs')
         cmd = 'cd qemu/ && chmod +x ' + elf + ' && ldd ' + elf
         exit_status, output = paramiko_client(vm_ip, cmd)
         if 'not found' in output:
-            print('Moving libs...', end=' ')
+            print('\033[92mSE   | \033[00mFound missing libs')
             src_lib = os.getcwd() + '/lib_repo/' + arch + '/'
             dst_lib = '/lib/'
             rsync('root', vm_ip, dst_lib, src_lib)
         else:
-            print('OK')
+            print('\033[92mSE   | \033[00mRequested libs are OK')
+    else:
+        print('\033[92mSE   | \033[00mELF is statically-linked')
 
+    print('\033[92mSE   | \033[00mRedirecting')
     with open('ip_list.txt', 'w') as f:
         for ip in ip_list:
             f.write(ip + '\n')
     paramiko_client_ipt(vm_ip)
 
+    print('\033[91mC&C  | \033[00mStarting C&C simulator')
     que = queue.Queue()
     serverThread = threading.Thread(
         target=lambda q, arg: q.put(server(arg)), args=(que, '', ))
     serverThread.start()
 
+    print('\033[92mSE   | \033[00mAnalyzing')
     cmd = 'cd qemu/ && chmod +x ' + elf + ' && python main.py ' + elf + ' 90'
     exit_status, output = paramiko_client(vm_ip, cmd, serverThread, que)
 
     if exit_status == 0:
-        print('Receiving report...', end=' ')
+        print('\033[94mRDP  | \033[00mGenerating report')
         output = output.split('\n')
         final_report_dir = output[-2][2:]
         scp_to_host('root', vm_ip, '/root/qemu/' +
                     final_report_dir, './final_report/', r=True)
+        print('\033[94mRDP  | \033[00mComplete')
     else:
         if exit_status != 'timeout':
-            print('Failed\n' + str(output).strip())
-        print('Finalizing report...', end=' ')
+            print(
+                '\033[94mRDP  | \033[00mTransfering report failed\n' + str(output).strip())
+        print('\033[94mRDP  | \033[00mFinalizing report')
         shutil.move('report/' + report_dir, 'final_report/')
         final_report_dir = report_dir
-        print('Done')
+        print('\033[94mRDP  | \033[00mComplete')
 
     try:
         shutil.move('info.json', 'final_report/' + final_report_dir)
         shutil.move('ip_list.txt', 'final_report/' + final_report_dir)
     except Exception as e:
-        print(e)
+        print('\033[94mRDP  | \033[00mUnexpected error occured')
 
     if not os.path.exists('final_report/' + final_report_dir):
-        print('Unexpected connection error...')
+        print('\033[94mRDP  | \033[00mConnection error occured')
         shutil.move('report/' + report_dir, 'final_report/')
         shutil.move('info.json', 'final_report/' + report_dir)
         shutil.move('ip_list.txt', 'final_report/' + report_dir)
-        print('Finalized report.')
 
-    print('Shutting down VM...', end=' ')
+    print('\033[92mSE   | \033[00mShutting down QEMU')
     shutdown_vm(arch)
     return 0
 
 
 if __name__ == "__main__":
     t = time.time()
-    print('__________vSandbox__________')
     elf = '.' + sys.argv[1][sys.argv[1].rfind('/'):]
 
-    print('Stage 1: Pre-analyze')
     arch, lib, report_dir = pre_analyze(elf)
     # arch, report_dir = 'i386', '467b70c57106d6031ca1fca76c302ec4d07da253f7d4043b60bdafd7b4d33390_1585795870/'
-
-    print('-'*24 + '\nStage 2: Analyzing with C&C Server')
     analyze_ccserver(elf, arch, lib, report_dir)
-    print('Analyzing done in ' + str(int(time.time()-t)) + '\n')
+    print('\033[93mINFO | \033[00mAnalyzing time: ' + str(time.time() - t))

@@ -20,10 +20,8 @@ def scp_to_vm(local_path, remote_user, remote_host, remote_path, r=False):
                              )
     output = p.communicate()[1].decode('utf-8')
     if output != '':
-        print('Failed\n' + output[1].strip())
         return 1
     else:
-        print('Done')
         return 0
 
 
@@ -38,10 +36,8 @@ def scp_to_host(remote_user, remote_host, remote_path, local_path, r=False):
 
     output = p.communicate()[1].decode('utf-8')
     if output != '':
-        print('Failed\n' + output[1].strip())
         return 1
     else:
-        print('Done')
         return 0
 
 
@@ -50,7 +46,6 @@ def rsync(remote_user, remote_host, remote_path, local_path):
                          (local_path, remote_user, remote_host, remote_path), shell=True, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     output = p.communicate()[1].decode('utf-8')
-    print('Moved libs')
 
 
 def start_vm(arch):
@@ -67,4 +62,3 @@ def start_vm(arch):
 def shutdown_vm(arch):
     k = subprocess.Popen('sudo pkill qemu-system-', shell=True)
     k.wait()
-    print('Done')

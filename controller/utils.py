@@ -16,25 +16,19 @@ def check_file_arch(file):
         info['type'] = 'ELF'
         if 'ARM' in ret:
             info['arch'] = 'arm'
-            print('ARM')
         elif 'MIPS' in ret:
             if 'MSB' in ret:
                 info['arch'] = 'mips'
             else:
                 info['arch'] = 'mipsel'
-            print('MIPS (' + info['arch'] + ')')
         elif 'Intel' in ret:
             info['arch'] = 'i386'
-            print('Intel 80386')
         elif 'x86-64' in ret:
             info['arch'] = 'amd64'
-            print('x86-64')
         elif 'PowerPC' in ret:
             info['arch'] = 'ppc'
-            print('PowerPC')
         else:
             info['arch'] = 'Unsupported'
-            print(ret)
     else:
         info['type'] = 'Unsupported'
 
@@ -75,9 +69,7 @@ def paramiko_client(vm_ip, cmd, thread=None, que=None, debug=False):
 
 
 def paramiko_client_ipt(vm_ip):
-    print('Moving ip_list...', end=' ')
     if scp_to_vm('ip_list.txt', 'root', vm_ip, '/root/') == 1:
-        print('Failed to move list of C&C IPs')
         exit(0)
 
     client = paramiko.SSHClient()
@@ -88,5 +80,4 @@ def paramiko_client_ipt(vm_ip):
         server_ip + '; done'
     _, stdout, _ = client.exec_command(cmd)
     exit_status = stdout.channel.recv_exit_status()
-    print('Redirect... OK')
     client.close()
