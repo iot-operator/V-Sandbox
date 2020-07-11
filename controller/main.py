@@ -103,7 +103,7 @@ def analyze_ccserver(elf, arch, lib, report_dir):
         print('\033[95mRDM  | \033[00mComplete')
         return 0
 
-    print('\033[95mRDM  | \033[00mC&C IPs are found. Rerun Sannbox')
+    print('\033[95mRDM  | \033[00mC&C IPs are found. Rerun Sandbox')
     print('\033[92mSE   | \033[00mStarting QEMU virtual machine')
     start_vm(arch)
 

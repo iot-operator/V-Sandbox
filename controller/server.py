@@ -87,7 +87,7 @@ def server(host):
     s.bind((host, port))
     s.listen(5)
 
-    print('\033[91mC&C  | \033[00mC&C Server is listeing')
+    print('\033[91mC&C  | \033[00mC&C Server is listening')
 
     while True:
         try:
